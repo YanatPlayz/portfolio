@@ -21,9 +21,9 @@ type LinkPreviewProps = {
   quality?: number;
   layout?: string;
 } & (
-  | { isStatic: true; imageSrc: string }
-  | { isStatic?: false; imageSrc?: never }
-);
+    | { isStatic: true; imageSrc: string }
+    | { isStatic?: false; imageSrc?: never }
+  );
 
 export const LinkPreview = ({
   children,
@@ -67,13 +67,13 @@ export const LinkPreview = ({
 
   const translateX = useSpring(x, springConfig);
 
-  const handleMouseMove = (event: any) => {
-    const targetRect = event.target.getBoundingClientRect();
+  const handleMouseMove = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    const targetRect = event.currentTarget.getBoundingClientRect();
     const eventOffsetX = event.clientX - targetRect.left;
-    const offsetFromCenter = (eventOffsetX - targetRect.width / 2) / 2; // Reduce the effect to make it subtle
+    const offsetFromCenter = (eventOffsetX - targetRect.width / 2) / 2;
     x.set(offsetFromCenter);
   };
-
+  
   return (
     <>
       {isMounted ? (
