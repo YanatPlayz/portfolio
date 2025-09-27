@@ -26,7 +26,7 @@ export default function Home() {
           </li>
           <li className="mb-2 tracking-[-.01em]">
             <LinkPreview
-              url="https://protest-psi.vercel.app/"
+              url="https://languageofresistance.org/"
               className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-pink-500 to-red-600"
             >language of resistance </LinkPreview>
           </li>
