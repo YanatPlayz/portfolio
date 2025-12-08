@@ -10,10 +10,10 @@ type TableData = {
 }
 
 function Table({ data }: { data: TableData }) {
-    let headers = data.headers.map((header, index) => (
+    const headers = data.headers.map((header, index) => (
         <th key={index}>{header}</th>
     ))
-    let rows = data.rows.map((row, index) => (
+    const rows = data.rows.map((row, index) => (
         <tr key={index}>
             {row.map((cell, cellIndex) => (
                 <td key={cellIndex}>{cell}</td>
@@ -32,7 +32,7 @@ function Table({ data }: { data: TableData }) {
 }
 
 function CustomLink(props: React.ComponentProps<typeof Link>) {
-    let href = props.href
+    const href = props.href
 
     if (typeof href === 'string' && href.startsWith('/')) {
         return (
@@ -54,7 +54,7 @@ function RoundedImage(props: ImageProps) {
 }
 
 function Code({ children, ...props }: React.ComponentProps<'code'>) {
-    let codeHTML = highlight(children as string)
+    const codeHTML = highlight(children as string)
     return <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />
 }
 
@@ -70,7 +70,7 @@ function slugify(str: string | React.ReactNode): string {
 
 function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
     const Heading = ({ children }: { children: React.ReactNode }) => {
-        let slug = slugify(children)
+        const slug = slugify(children)
         return React.createElement(
             `h${level}`,
             { id: slug },
@@ -90,7 +90,7 @@ function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
     return Heading
 }
 
-let components = {
+const components = {
     h1: createHeading(1),
     h2: createHeading(2),
     h3: createHeading(3),
