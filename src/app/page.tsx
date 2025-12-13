@@ -1,4 +1,3 @@
-import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { LinkPreview } from "@/components/ui/link-preview";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -6,7 +5,6 @@ import Link from "next/link";
 export default function Home() {
   return (
       <main className="flex flex-col gap-[32px] items-start">
-        <AnimatedThemeToggler />
         <h1>tanay agrawal</h1>
 
         <ol className="font-mono list-inside list-decimal text-sm/6 text-left">
