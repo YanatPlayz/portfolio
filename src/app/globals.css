@@ -247,3 +247,15 @@ table {
 .title {
   text-wrap: balance;
 }
+
+.prose .footnotes {
+  @apply mt-8 pt-8 border-t border-neutral-200 dark:border-neutral-800 text-sm text-neutral-700 dark:text-neutral-300;
+}
+
+.prose .footnotes ol {
+  @apply list-decimal pl-4;
+}
+
+.prose .footnotes li {
+  @apply mb-2;
+}

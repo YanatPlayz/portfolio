@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import remarkGfm from 'remark-gfm'
 import Image, { ImageProps } from 'next/image'
 import { MDXRemote, MDXRemoteProps } from 'next-mdx-remote/rsc'
 import { highlight } from 'sugar-high'
@@ -70,7 +71,14 @@ function slugify(str: string | React.ReactNode): string {
 
 function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
     const Heading = ({ children }: { children: React.ReactNode }) => {
-        const slug = slugify(children)
+        let slug = slugify(children)
+        let text = children
+
+        if (slug === 'footnotes') {
+            text = 'References'
+            slug = 'references'
+        }
+
         return React.createElement(
             `h${level}`,
             { id: slug },
@@ -81,7 +89,7 @@ function createHeading(level: 1 | 2 | 3 | 4 | 5 | 6) {
                     className: 'anchor',
                 }),
             ],
-            children
+            text
         )
     }
 
@@ -101,6 +109,16 @@ const components = {
     a: CustomLink,
     code: Code,
     Table,
+    blockquote: Blockquote,
+}
+
+function Blockquote(props: React.ComponentProps<'blockquote'>) {
+    return (
+        <blockquote
+            className="bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 px-4 rounded"
+            {...props}
+        />
+    )
 }
 
 export function CustomMDX(props: MDXRemoteProps) {
@@ -108,6 +126,16 @@ export function CustomMDX(props: MDXRemoteProps) {
         <MDXRemote
             {...props}
             components={{ ...components, ...(props.components || {}) }}
+            options={{
+                ...props.options,
+                mdxOptions: {
+                    ...props.options?.mdxOptions,
+                    remarkPlugins: [
+                        ...(props.options?.mdxOptions?.remarkPlugins || []),
+                        remarkGfm
+                    ]
+                }
+            }}
         />
     )
 }
