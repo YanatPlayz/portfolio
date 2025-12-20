@@ -8,18 +8,47 @@ summary: 'Join me on my new project investigating how words change over time in 
 
 > कथमर्थं निषेधन्तु श्रुतयः स्मृतयोऽपि वा । यासामेकं पदमपि न चलत्यर्थतो विना ॥ [^1]
 
-*How could meaning be denied by [Śruti](https://www.wisdomlib.org/definition/shruti) (the Vedas) or [Smṛti](https://www.wisdomlib.org/definition/smriti), if even a single word does not move (function) without its meaning?*
+*How could meaning ever be denied by the [Śrutis](https://www.wisdomlib.org/definition/shruti) (the Vedas) or [Smṛtis](https://www.wisdomlib.org/definition/smriti), when not even a single word can function without meaning?*
 
-In Sanskrit intellectual tradition, meaning was not incidental in across texts. Not even a single word was thought to function without purpose or semantic weight. This [śloka](https://www.wisdomlib.org/definition/sloka) above testifies that language is treated as intentional with precise regard to meaning.
+In Sanskrit intellectual tradition, meaning was not incidental across texts. Not even a single word was thought to function without purpose or semantic weight. The [śloka](https://www.wisdomlib.org/definition/sloka) above testifies that language is treated as intentional with precise regard to meaning.
 
-This project aims to begin from that same perspective and respect for meaning. I seek to answer these following question: 
+This project begins from that same perspective and respect for meaning.
 
-1. *How do meanings of specific words emerge from usage across large bodies of Sanskrit text?*
-2. *How might those patterns change across time?*
-3. *Can modern computational tools (namely [word embeddings](https://en.wikipedia.org/wiki/Word_embedding)) help us answer these questions?*
+## About Semantic Drift
 
-## Methodology
+Languages change. Words travel across centuries, genres, and communities. They appear in religious, legal, scientific, casual, and musical (to name a few) contexts. Therefore, they evolve over time as we progress as a species. This phenomenon, where a word’s meaning shifts due to changing patterns of usage, is known as **semantic drift** or **semantic change**.
 
-Filler text for now.
+A prime example of this is slang, especially in online language. The word *cool* once only meant moderately cold, but now means something like interesting or stylish. To *ghost* someone is not to turn them into a specter, but rather to ignore their texts. (As 2025 draws to a close, I can only imagine historical linguists working overtime analyzing the hundreds of new slang words!) 
 
-[^1]: *Wisdom Library, Mahāsubhāṣitasaṃgraha (quote nr. 8477) https://www.wisdomlib.org/sanskrit/quote/mss/subhashita-8477*
+![humorous comic of meaning](/images/charged-comic.png) [[^2]]
+
+Traditional philology can detect such changes through meticulous reading and documentation, but this approach is necessarily limited in scale. In my case, Sanskrit literature spans thousands of texts across millennia and would take forever for a human reader to track how every occurrence of a word behaves.
+
+## A Modern Lens
+
+Computational methods can contribute as tools for semantic observation. One influential idea is [distributional semantics](https://en.wikipedia.org/wiki/Distributional_semantics), which can be summed up in the distributional hypothesis:
+
+> Words that occur in similar contexts tend to purport similar meanings. 
+
+Word embedding models use this idea by representing words as vectors in a high-dimensional space based on their surrounding words. If the contexts change, the vector shifts. If two words are used similarly, their vectors lie close together. Check out [this quick video](https://www.youtube.com/shorts/FJtFZwbvkI4) to visualize this!
+
+How does this apply to semantic drift? Well, we can construct multiple vector spaces of word embeddings from different periods of time, and then compare vectors of the same word across different periods to measure change. This methodology, introduced by [[^3]], serves as the base for my research.
+
+## Research Question(s)
+
+I seek to answer the following questions: 
+
+1. *Can diachronic word embeddings capture measurable semantic shift in Sanskrit words across ancient texts?*
+2. *How do these computationally detected shifts compare with known / hypothesized word changes in Sanskrit literature?*
+
+## What next?
+
+This blog series will document my project step by step, walking you, the reader, through my process and the learnings I gleaned from it.
+
+I'll cover how I constructed my corpus, including cleaning and normalization, complex Sanskrit-specific considerations (foreshadowing), modeling choices, and my results / findings. 
+
+Join me on this journey and lastly, thank you for reading!
+
+[^1]: *Wisdom Library, Mahāsubhāṣitasaṃgraha (quote nr. 8477), https://www.wisdomlib.org/sanskrit/quote/mss/subhashita-8477*
+[^2]: *PBF Comics, https://pbfcomics.com/comics/charged/*
+[^3]: *Diachronic Word Embeddings Reveal Statistical Laws of Semantic Change, PDF: https://aclanthology.org/P16-1141.pdf*
