@@ -59,6 +59,14 @@ function Code({ children, ...props }: React.ComponentProps<'code'>) {
     return <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />
 }
 
+function Caption({ children }: { children: React.ReactNode }) {
+    return (
+        <span className="block w-full text-center mt-2 mb-8 text-sm text-muted-foreground">
+            {children}
+        </span>
+    )
+}
+
 function slugify(str: string | React.ReactNode): string {
     return (str?.toString() || "")
         .toLowerCase()
@@ -110,6 +118,7 @@ const components = {
     code: Code,
     Table,
     blockquote: Blockquote,
+    Caption,
 }
 
 function Blockquote(props: React.ComponentProps<'blockquote'>) {

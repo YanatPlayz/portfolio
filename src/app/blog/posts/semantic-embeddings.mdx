@@ -1,0 +1,116 @@
+---
+title: 'How computers can help us understand word meanings as they change over time'
+publishedAt: '2025-12-30'
+summary: 'By creating and comparing word embeddings, computers can "learn" the meanings of words and help us identify changes in their usage over time. '
+category: 'Linguistics'
+---
+
+Calling someone *nice* was once an insult [^1]. Coming from the Latin *nescius*, meaning 'ignorant', it was synonymous with foolish and simple-minded in the 13th century. Then, over hundreds of years, it underwent a dramatic transformation ("foolish" → "fussy" → "dainty" → "precise" → "agreeable" → "kind") to reach its modern meaning.
+
+#### Semantics /səˈman(t)iks/ is the study of meaning in language.
+
+This kind of change is not unusual. Languages are dynamic. Words travel across centuries, genres, and communities. They appear in religious, legal, scientific, musical, and casual (to name a few) contexts. Therefore, they evolve as their usage changes (often from humans and culture changing). In linguistics, this phenomenon is known as **semantic drift** or **semantic change**.
+
+Just take a look at slang (especially in [online language](https://gabb.com/blog/teen-slang/)). The word *cool* once only meant moderately cold, but now also means something like interesting or stylish. To *ghost* someone is not to turn them into a specter, but rather to ignore their texts.
+
+Ok, how do we study, measure, or quantify this? Well, traditional [philology](https://en.wikipedia.org/wiki/Philology) can detect such changes through meticulous reading and documentation, but this approach is necessarily limited in scale. To approach this problem, we need to understand what meaning is (or if that's too philosophical, figure out how it is constructed).
+
+## The meaning of meaning
+
+You don’t need a dictionary to sense when a word is out of place. If someone calls you nice, you (hopefully) would not take it as an insult. 
+
+This intuition comes from lived experience - we hear and see words used in thousands of situations and are able to slowly construct internal models of meaning.
+
+> **"You shall know a word by the company it keeps."** - John Firth
+
+Simply put, this says that you can deduce the meaning of a word by looking at the words around it (its context). This is the basis of [distributional semantics](https://en.wikipedia.org/wiki/Distributional_semantics), deriving the *distributional hypothesis*:
+
+> Words that occur in similar contexts tend to have similar meanings. 
+
+Since meaning is reflected in context, we should create representations of each word based on the contexts in which it appears.
+
+## Vector embeddings
+
+Turns out, computers can help us build such representations by encoding surrounding context words into numeric vectors.
+
+Word embedding models represent each word as a vector in a high-dimensional space. These vectors are not assigned by hand. Instead, they are learned from large amounts of text by observing how words are used. The core principle is still the same distributional hypothesis proposed by linguists decades ago.
+
+Early approaches counted word co-occurrences (how often each word appears next to each other word) and stored them in large matrices to construct the vectors. A stronger strategy, leveraged by modern models, is to have a small neural network learn word representations automatically by solving a prediction task. To make good predictions, the model must learn meaningful vectors that capture relationships between words.
+
+Word2Vec [^2], introduced in 2013, popularized two inverse training strategies: **Continuous Bag of Words (CBOW)** and **Skip-gram**.
+
+## Fill in the ____
+
+CBOW hides a word in a sentence and asks the model to guess it from the surrounding words.
+
+> May the ____ be with you. *(hint: Star Wars)*
+
+The model uses the nearby words (contained in a set window size) to predict the missing **target** word. If I remove the word 'the', you can see how the predicted word changes.
+
+> May ____ be with you.
+
+Here, instead of 'force', 'peace' or 'happiness' come to mind. So, **words that could fill the same blank end up with similar vector representations**.
+
+Skip-gram is basically the inverse. Instead of guessing a word from its context, it uses a word to guess its neighbors.
+
+Given the word tennis, the model learns that words like court, racket, ball, or elbow often appear nearby. During training, words that produce similar contexts are grouped closer together in the embedding space; words used differently are farther apart. 
+
+![plot of Star Wars word embeddings](/images/star-wars.gif)
+<Caption>Continuing the Star Wars theme, this GIF ([source](https://medium.com/@marcusa314/visualizing-words-377624cb20c7)) shows the distribution of Star Wars word embeddings. Words of the same type (characters, places, organizations) are clustered together. </Caption>
+
+## Analogies
+
+A very cool (not temperature) property of word embeddings is that they can solve analogies. The most famous example is:
+
+> king - man + woman ≈ queen
+
+If you remove the 'man' part from king, you'll get something like *ruler*. Then, if you add 'woman' to that, you get *queen*. 
+
+## Comparison is the thief of joy 
+
+So, we have all these vectors that represent the meanings of words in some high-dimensional space (for reference, DeepSeek-V3 has an embedding size of 7168 [^3]). It's hard to comprehend this space (really, anything above 3D is difficult), but don't panic yet.
+
+We can use properties of vectors to compare two words to each other and see how similar they are. The most common measure is [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity), which is the dot product of the two vectors divided by the product of their magnitudes. Without getting too much into the math, this helps us assign similarity scores (-1 to 1) to a pair of words based on the angle between them (ignoring the length of the vectors).
+
+## For those who already forgot,
+
+1. Semantic drift describes how the meaning of a word changes over time. 
+2. The context around a word reflects the meaning of the word.
+3. This idea is used to train word embeddings, which are numeric representations of words.
+4. Similar words are closer together in the embedding space and have higher cosine similarity scores.
+
+I highly recommend that you check out [this quick video](https://www.youtube.com/shorts/FJtFZwbvkI4) from @3Blue1Brown to visualize these concepts!
+
+-----
+
+## Tying it together
+
+How does all of this word embeddings stuff apply to semantic drift? 
+
+Let's go back to our original question: how can we study, measure, or quantify semantic drift? **Word embeddings provide a powerful and scalable way to do so.** Unlike traditional methods, which involve painstaking manual reading, embeddings let us quantify meaning mathematically and track how it shifts over time.
+
+We can construct multiple vector spaces of word embeddings from different periods of time, and then compare vectors of the same word across different periods to measure change. This methodology was introduced by Hamilton et al. in their 2016 paper [^4].
+
+There are two main ways to compare vectors here:
+
+1. **Global Measure**: This measures how much a word has changed in the overall semantic space using the cosine similarity between its vectors from two different time periods. A low similarity score indicates that the word's meaning has shifted a lot.
+2. **Local Neighborhood Measure**: This measures changes in a word's *k*-nearest neighbors. For example, *nice* in the 12th century would have neighbors like *stupid* and *foolish*, while in the 21st century, it would be closest to *kind* and *gentle*. 
+
+## Case Study
+
+With these tools in hand, I started a research project to apply word embeddings to study semantic drift in ancient Sanskrit texts to see if this methodology could be applied successfully to languages other than English.
+
+
+
+## Conclusion
+
+Thanks for reading! I'd love to hear your thoughts, suggestions, and questions - please do reach out.
+
+<span className="hidden">[^5][^6]</span>
+
+[^1]: *The Not-So-Nice Origins of 'Nice', https://todayscatholic.org/the-not-so-nice-origins-of-nice/*
+[^2]: *Efficient Estimation of Word Representations in Vector Space, PDF: https://arxiv.org/pdf/1301.3781*
+[^3]: *Hesam Hassani, https://huggingface.co/spaces/hesamation/primer-llm-embedding?section=dimensionality*
+[^4]: *Diachronic Word Embeddings Reveal Statistical Laws of Semantic Change, PDF: https://aclanthology.org/P16-1141.pdf*
+[^5]: *The Illustrated Word2vec, https://jalammar.github.io/illustrated-word2vec/*
+[^6]: *From Words to Vectors: Understanding Word Embeddings in NLP, https://vizuara.substack.com/p/from-words-to-vectors-understanding*

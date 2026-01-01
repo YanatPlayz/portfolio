@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { formatDate, getBlogPosts } from '@/app/blog/utils'
+import { formatDate, getBlogPosts, getCategoryStyles } from '@/app/blog/utils'
+import { cn } from '@/lib/utils'
 
 export function BlogPosts() {
     const allBlogs = getBlogPosts()
@@ -25,7 +26,10 @@ export function BlogPosts() {
                             <p className="text-neutral-600 dark:text-neutral-400 w-[160px] shrink-0 tabular-nums">
                                 {formatDate(post.metadata.publishedAt, false)}
                             </p>
-                            <p className="text-neutral-900 dark:text-neutral-100 tracking-tight hover:underline hover:underline-offset-4">
+                            <p className={cn(
+                                "tracking-tight hover:underline hover:underline-offset-4 transition-colors duration-200",
+                                getCategoryStyles(post.metadata.category).text
+                            )}>
                                 {post.metadata.title}
                             </p>
                         </div>

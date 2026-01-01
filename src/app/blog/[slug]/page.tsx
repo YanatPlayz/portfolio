@@ -1,8 +1,9 @@
-
 import { notFound } from 'next/navigation'
 import { CustomMDX } from '@/components/mdx'
-import { formatDate, getBlogPosts } from '@/app/blog/utils'
+import { formatDate, getBlogPosts, getCategoryStyles } from '@/app/blog/utils'
 import { baseUrl } from '@/app/sitemap'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
 export async function generateStaticParams() {
     const posts = getBlogPosts()
@@ -61,6 +62,8 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
         notFound()
     }
 
+    const styles = getCategoryStyles(post.metadata.category)
+
     return (
         <section>
             <script
@@ -89,9 +92,18 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
                 {post.metadata.title}
             </h1>
             <div className="flex justify-between items-center mt-2 mb-8 text-sm">
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                    {formatDate(post.metadata.publishedAt)}
-                </p>
+                <div className="flex items-center gap-2">
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                        Tanay Agrawal
+                    </p>
+                    <span className="text-sm text-neutral-600 dark:text-neutral-400 mb-0.5">|</span>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                        {formatDate(post.metadata.publishedAt)}
+                    </p>
+                    <Badge variant="default" className={cn("font-medium", styles.badge)}>
+                        {post.metadata.category}
+                    </Badge>
+                </div>
             </div>
             <article className="prose">
                 <CustomMDX source={post.content} />
