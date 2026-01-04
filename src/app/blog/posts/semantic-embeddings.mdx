@@ -102,7 +102,7 @@ There are two main ways to compare vectors here:
 
 ## Case Study
 
-With these tools in hand, I started a research project to apply word embeddings to study semantic drift in ancient Sanskrit texts to see if this methodology could be applied successfully to languages other than English.
+With these tools in hand, I embarked on a research project to apply word embeddings to study semantic drift in ancient Sanskrit texts to see if this methodology could be applied successfully to languages other than English.
 
 I defined the time periods by grouping digitally available texts into the following eras:
 
@@ -111,7 +111,9 @@ I defined the time periods by grouping digitally available texts into the follow
 3. Epics (400 BCE - 400 CE)
 4. Śāstra + Sūtra (200 BCE - 500 CE)
 
-Sanskrit poses unique challenges for this task, however. First, Sanskrit has a feature known as [Sandhi](https://en.wikipedia.org/wiki/Sandhi) (phonological fusion). Words often merge at boundaries and create new, fused forms, which disrupt semantic information and increase sparsity (the total number of unique "words" skyrockets).
+Like described before, for each period, I create a vector space of word embeddings then compare the vectors across different periods to measure semantic drift. My main research question is: Can diachronic word embeddings capture measurable semantic shift in Sanskrit words across ancient texts? And how do these changes compare with known / hypothesized word changes in Sanskrit linguistic literature?
+
+However, I found very quickly during my research that Sanskrit poses unique challenges for this task. First, Sanskrit has a feature known as [Sandhi](https://en.wikipedia.org/wiki/Sandhi) (phonological fusion). Words often merge at boundaries and create new, fused forms, which disrupt semantic information and increase sparsity (the total number of unique "words" skyrockets).
 
 Furthermore, Sanskrit exhibits extensive compounding (samāsa), where multiple words are combined into a single grammatical unit that expresses a new meaning. For refrence, here are some fixed compounds in modern languages:
 1. *toothbrush*: English, literally "brush for teeth"
@@ -123,7 +125,7 @@ Take a look at this 42 character long "word" that I found in the corpus:
 
 > grahaṇasvarūpāsmitānvayārthavattvasaṃyamād
 
-We don't want to treat such forms as individual tokens, as it severely degrades the quality of learned word representations. Thankfully, there are tools to handle this, but the far most robust (and [beautifully integrated](https://pypi.org/project/dharmamitra-sanskrit-grammar/) with Python) is ByT5-Sanskrit [^5]. It provides a pre-trained neural network that can pretty accurately split Sandhi and compound forms. Our word is split into:
+We don't want to treat such forms as individual tokens, as it severely degrades the quality of learned word representations. Thankfully, there are tools to handle this, but the far most robust (and [beautifully integrated](https://pypi.org/project/dharmamitra-sanskrit-grammar/) with Python) is ByT5-Sanskrit [^5]. It provides a pre-trained neural network that can pretty accurately split Sandhi and compound forms. Our word is now split into:
 
 > grahaṇa sva rūpa asmitā anvaya arthavattva saṃyamāt
 
@@ -131,9 +133,13 @@ Second, Sanskrit is a highly inflected language. Nouns can have over 70 forms, a
 
 To clear this noise, I used [lemmatization](https://en.wikipedia.org/wiki/Lemmatization) to reduce words to their base, or canonical, form. This is basically like converting 'running', 'runs', 'ran' all to 'run'.
 
-There's also different models that can be used to generate embeddings. Word2vec, mentioned earlier, is a key example. There's also [fastText](https://fasttext.cc/), which is an extension of Word2vec that uses character n-grams (e.g. 'apple' becomes [ap, app, ppl, ple, le]) to represent words. It basically operates at the sub-word level, which can be helpful for languages like Sanskrit that are morphologically rich [^6].
+Next, Sanskrit contains lots of polysemous words, meaning each word can have multiple meanings based on the context. A famous example in English is *bank*, which can mean a financial institution or the edge of a river. To address this issue, I am looking into contextualized embeddings, which are dynamic vector representations of words that change based on surrounding context. Here, models like BERT or GPT generate a new embedding for each token every time it appears, based on the entire input sequence.
 
-I'm currently in the process of training models with different configurations to evaluate which techniques are most effective for Sanskrit. I hope to publish my results in the near future - stay tuned for that. Currently, if you're interested, check out [my other blog posts](https://tanayagrawal.xyz/blog/) for more details about this project or me.
+Another interesting aspect is that Sanskrit has a free word order, due to its highly inflected nature. You can basically switch around the words like Yoda (too many Star Wars references?) in a sentence and it would still retain its meaning.
+
+There's also different models that can be used to generate embeddings. Word2vec and BERT, mentioned earlier, are key examples. [fastText](https://fasttext.cc/) is an extension of Word2vec that uses character n-grams (e.g. 'apple' becomes [ap, app, ppl, ple, le]) to represent words. It basically operates at the sub-word level, which can be helpful for languages like Sanskrit that have extensive morphology [^6].
+
+I'm currently in the process of training models with different configurations to evaluate which techniques are most effective for Sanskrit. If you're interested, check out [my other blog posts](https://tanayagrawal.xyz/blog/) for more details about this project or me. 
 
 ## Conclusion
 
