@@ -111,23 +111,41 @@ I defined the time periods by grouping digitally available texts into the follow
 3. Epics (400 BCE - 400 CE)
 4. Śāstra + Sūtra (200 BCE - 500 CE)
 
-Sanskrit poses unique challenges for this task, however. First, Sanskrit has a feature known as [Sandhi](https://en.wikipedia.org/wiki/Sandhi) (phonological fusion). Words often merge at boundaries and create new, fused forms, which disrupt semantic information and increase noise (the total number of unique "words" skyrockets).
+Sanskrit poses unique challenges for this task, however. First, Sanskrit has a feature known as [Sandhi](https://en.wikipedia.org/wiki/Sandhi) (phonological fusion). Words often merge at boundaries and create new, fused forms, which disrupt semantic information and increase sparsity (the total number of unique "words" skyrockets).
 
-Furthermore, Sanskrit exhibits extensive compounding. This is where words are joined semantically to form entirely new terms, changing meaning unpredictably.
+Furthermore, Sanskrit exhibits extensive compounding (samāsa), where multiple words are combined into a single grammatical unit that expresses a new meaning. For refrence, here are some fixed compounds in modern languages:
+1. *toothbrush*: English, literally "brush for teeth"
+2. *rompecabezas*: Spanish, means 'puzzle': but literally "head-breakers," because solving it is so hard for the brain
 
-Second, Sanskrit is a highly inflected language. Nouns can have over 70 forms, and verbs up to 900 forms. We don't want this immense morphological variation to cause forms of the same root word to be treated as separate tokens.
+Sanskrit compounds are this but on steroids: they are much longer, highly productive (speakers can create a potentially unlimited number of new words), and context-dependent. To a computational model, these constructions appear as rare, atomic tokens, even though they contain several meaningful components, making it difficult to recover shared semantic structure from raw surface text.
 
-To clear the morphological noise, I used [lemmatization](https://en.wikipedia.org/wiki/Lemmatization) to reduce words to their base form. 
+Take a look at this 42 character long "word" that I found in the corpus:
+
+> grahaṇasvarūpāsmitānvayārthavattvasaṃyamād
+
+We don't want to treat such forms as individual tokens, as it severely degrades the quality of learned word representations. Thankfully, there are tools to handle this, but the far most robust (and [beautifully integrated](https://pypi.org/project/dharmamitra-sanskrit-grammar/) with Python) is ByT5-Sanskrit [^5]. It provides a pre-trained neural network that can pretty accurately split Sandhi and compound forms. Our word is split into:
+
+> grahaṇa sva rūpa asmitā anvaya arthavattva saṃyamāt
+
+Second, Sanskrit is a highly inflected language. Nouns can have over 70 forms, and verbs up to 900 forms. We don't want this immense morphological variation to cause forms of the same root word to be treated as separate tokens. Morphologically rich languages have significant grammatical information (like tense, number, case, gender) packed within the words themselves, often adding morphemes to words to express more meaning.
+
+To clear this noise, I used [lemmatization](https://en.wikipedia.org/wiki/Lemmatization) to reduce words to their base, or canonical, form. This is basically like converting 'running', 'runs', 'ran' all to 'run'.
+
+There's also different models that can be used to generate embeddings. Word2vec, mentioned earlier, is a key example. There's also [fastText](https://fasttext.cc/), which is an extension of Word2vec that uses character n-grams (e.g. 'apple' becomes [ap, app, ppl, ple, le]) to represent words. It basically operates at the sub-word level, which can be helpful for languages like Sanskrit that are morphologically rich [^6].
+
+I'm currently in the process of training models with different configurations to evaluate which techniques are most effective for Sanskrit. I hope to publish my results in the near future - stay tuned for that. Currently, if you're interested, check out [my other blog posts](https://tanayagrawal.xyz/blog/) for more details about this project or me.
 
 ## Conclusion
 
 Thanks for reading! I'd love to hear your thoughts, suggestions, and questions - please do reach out.
 
-<span className="hidden">[^5][^6]</span>
+<span className="hidden">[^7][^8]</span>
 
 [^1]: *The Not-So-Nice Origins of 'Nice', https://todayscatholic.org/the-not-so-nice-origins-of-nice/*
 [^2]: *Efficient Estimation of Word Representations in Vector Space, PDF: https://arxiv.org/pdf/1301.3781*
 [^3]: *Hesam Hassani, https://huggingface.co/spaces/hesamation/primer-llm-embedding?section=dimensionality*
 [^4]: *Diachronic Word Embeddings Reveal Statistical Laws of Semantic Change, PDF: https://aclanthology.org/P16-1141.pdf*
-[^5]: *The Illustrated Word2vec, https://jalammar.github.io/illustrated-word2vec/*
-[^6]: *From Words to Vectors: Understanding Word Embeddings in NLP, https://vizuara.substack.com/p/from-words-to-vectors-understanding*
+[^5]: *One Model is All You Need: ByT5-Sanskrit, PDF: https://arxiv.org/pdf/2409.13920v1*
+[^6]: *Evaluating Neural Word Embeddings for Sanskrit, PDF: https://arxiv.org/pdf/2104.00270*
+[^7]: *The Illustrated Word2vec, https://jalammar.github.io/illustrated-word2vec/*
+[^8]: *From Words to Vectors: Understanding Word Embeddings in NLP, https://vizuara.substack.com/p/from-words-to-vectors-understanding*
