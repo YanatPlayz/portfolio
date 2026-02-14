@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function NotFound() {
   return (
     <div className="px-2 py-8 flex flex-col gap-3 items-center">
