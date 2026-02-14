@@ -5,7 +5,7 @@ export default function Footer() {
         <footer className="flex gap-[24px] flex-wrap justify-start">
             <a
                 className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                href="https://www.linkedin.com/in/tanay-agrawal-28487b307/"
+                href="https://www.linkedin.com/in/tanayagrawal31/"
                 target="_blank"
                 rel="noopener noreferrer"
             >
