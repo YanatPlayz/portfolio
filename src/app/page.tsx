@@ -7,10 +7,7 @@ import { ArrowUpRightIcon } from "lucide-react";
 export default function Home() {
   return (
     <main className="flex flex-col gap-[32px] items-start">
-
-      <div className="flex items-center gap-[16px]">
-        <h1>tanay agrawal</h1>
-        <Link href="/blog" >
+      <Link href="/blog" >
           <Announcement
             className="bg-sky-100 text-sky-700 dark:bg-sky-700 dark:text-sky-100"
             themed
@@ -22,8 +19,11 @@ export default function Home() {
             </AnnouncementTitle>
           </Announcement>
         </Link>
+      <div className="flex flex-col">
+        <h1>Tanay Agrawal</h1>
+        <h2 className="text-muted-foreground">27tanaya@students.harker.org</h2>
       </div>
-
+      
       <ol className="font-mono list-inside list-decimal text-sm/6 text-left">
         <li className="mb-2">
           <LinkPreview
