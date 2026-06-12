@@ -56,7 +56,7 @@ export default function Home() {
           >harkerdev parking </LinkPreview></li>
         <li className="mb-2">
           <LinkPreview
-            url="https://its4advocacy.vercel.app/"
+            url="https://its4advocacy.org/"
             imageSrc="/images/its4advocacy.png"
             isStatic
             className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-stone-500 to-stone-800 dark:text-opacity-10 dark:from-stone-500 dark:to-stone-300"
