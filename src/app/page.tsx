@@ -70,7 +70,7 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          view cv <ChevronRight />
+          view résumé <ChevronRight />
         </Link>
 
         <a

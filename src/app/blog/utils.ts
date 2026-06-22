@@ -10,19 +10,19 @@ export type Metadata = {
 }
 
 export const categoryStyles: Record<string, { text: string; badge: string }> = {
-    Sanskrit: {
+    sanskrit: {
         text: 'text-amber-600 dark:text-amber-400',
         badge: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/50'
     },
-    Projects: {
+    projects: {
         text: 'text-emerald-600 dark:text-emerald-400',
         badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/50'
     },
-    Computer: {
+    computer: {
         text: 'text-purple-600 dark:text-purple-400',
         badge: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/50'
     },
-    Linguistics: {
+    linguistics: {
         text: 'text-rose-600 dark:text-rose-400',
         badge: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/50'
     },

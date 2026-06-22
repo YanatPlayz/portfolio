@@ -129,7 +129,6 @@
 
 html {
   min-width: 360px;
-  scrollbar-gutter: stable both-edges;
 }
 
 .prose .anchor {
