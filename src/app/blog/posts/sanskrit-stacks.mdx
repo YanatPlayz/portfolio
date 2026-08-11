@@ -1,0 +1,64 @@
+---
+title: 'A trip to Berkeley for one book'
+publishedAt: '2026-06-26'
+summary: 'How a drive to the UC Berkeley Main Stacks for a single 1986 monograph gave me a ground truth to validate my Sanskrit embeddings against.'
+category: 'sanskrit'
+---
+
+
+Remember [when](/blog/sanskrit-corpus) I said Option 1 (actually going somewhere and poring over physical books) was the fun but impractical route, and that we'd stay home and download files instead? Well, I ended up doing a smaller, Bay Area-sized version of the former option anyway.
+
+Here's the problem I had walked into. I had trained embeddings, calculated cosine distances between the same word across four time periods, and the numbers *looked* meaningful from a few qualitative tests. However, mere appearance is not a verified result. If my model says the meaning of a word drifted between the Vedic and Epic periods, how do I know it actually drifted? I can't go back in time and talk to the ancient peoples (yet).
+
+All this to say that I needed a ground truth, a list of Sanskrit words where a real Sanskritist (of course, working without word vectors) had already documented that the meaning shifted. Does my model agree with the philologists and recover the same shifts?
+
+Thankfully for me, that list exists. It's in a book called *Semantic Change in Sanskrit* by Jiyalal Kamboj (shout out!) [^1]. I couldn't find it for sale anywhere that would get it to me in time. The only option is sitting on a shelf few floors underground in the Main Stacks at UC Berkeley.
+
+## The Main Stacks
+
+So I drove to Berkeley.
+
+<BounceCards
+  images="/images/berkeley/1.jpg, /images/berkeley/3.jpg, /images/berkeley/5.jpg, /images/berkeley/4.jpg, /images/berkeley/6.jpg"
+  containerWidth="500"
+  containerHeight="260"
+  animationDelay="0.4"
+  animationStagger="0.08"
+  easeType="elastic.out(1, 0.6)"
+  transformStyles="rotate(6deg) translate(-150px) | rotate(-4deg) translate(-75px) | rotate(3deg) | rotate(-6deg) translate(75px) | rotate(5deg) translate(150px)"
+  enableHover
+/>
+<Caption>Shot on my 6 year old iPhone.</Caption>
+
+To get to this book, you descend past gorgeous floors of shelving on rails that you crank open by hand, and the deeper you go the quieter it gets. There's something appropriate about hunting for a book on how meanings decay amid shelves of books (potentially) gathering dust.
+
+Dr. Kamboj's book turned out to be exactly what I was hoping for. It's a systematic treatment of how Sanskrit words changed meaning, organized by mechanism and with specific textual examples cited.
+
+## From book to table
+
+What I pulled out of it was a table of historically attested shifts: word, before & end senses, transition period, and change type. Some standard philological categories I encountered ([more](https://homepage.ruhr-uni-bochum.de/silke.hoeche/Aspects%20of%20Language%20Change/types_of_semantic_change.htm) on this):
+
+1. *Specialization*, word meaning is restricted
+2. *Broadening*, word meaning encompasses more
+3. *Amelioration*, word meaning improves
+4. *Pejoration*, word meaning degrades 
+5. *Metaphor*, word meaning shifts through similarity
+6. *Metonymy*, word meaning shifts through association
+
+Which one do you think would be hardest for the model to track? Here's a hint - I'm using static word embeddings.
+
+![Sample validation row](/images/row.png)
+<Caption>Sample row from the validation table I built. The full table can be found in the Appendix section of my paper.</Caption>
+
+## Testing the vectors
+
+For every word in my table, I created two sets of anchor words, one for each sense, and constructed a blended vector from those anchors. And then cosine similarity again. Well, sort of. See the Methodology post for the nitty-gritty. It's not perfect, but it gives us a good idea of how well the embeddings capture semantic change.
+
+## Conclusion
+No matter how computationally advanced the approach, there's always some merit going back to the old-school way.
+
+Next post should be the results and discussion. As always, I'd love to hear your thoughts, suggestions, and questions. Thanks for reading!
+
+![semantic change book](/images/berkeley/2.jpg)
+
+[^1]: *Semantic Change in Sanskrit, https://books.google.com/books/about/Semantic_Change_in_Sanskrit.html?id=JGwhAAAAMAAJ*

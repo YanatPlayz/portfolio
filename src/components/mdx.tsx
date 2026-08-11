@@ -4,6 +4,7 @@ import Image, { ImageProps } from 'next/image'
 import { MDXRemote, MDXRemoteProps } from 'next-mdx-remote/rsc'
 import { highlight } from 'sugar-high'
 import React from 'react'
+import BounceCards from '@/components/ui/bounce-cards'
 
 type TableData = {
     headers: string[]
@@ -119,6 +120,7 @@ const components = {
     Table,
     blockquote: Blockquote,
     Caption,
+    BounceCards,
 }
 
 function Blockquote(props: React.ComponentProps<'blockquote'>) {
