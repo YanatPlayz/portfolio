@@ -8,22 +8,22 @@ export default function Home() {
   return (
     <main className="flex flex-col gap-[32px] items-start">
       <Link href="/blog" >
-          <Announcement
-            className="bg-sky-100 text-sky-700 dark:bg-sky-700 dark:text-sky-100"
-            themed
-          >
-            <AnnouncementTag>blog</AnnouncementTag>
-            <AnnouncementTitle>
-              check out my latest posts!
-              <ArrowUpRightIcon className="shrink-0 opacity-70" size={16} />
-            </AnnouncementTitle>
-          </Announcement>
-        </Link>
+        <Announcement
+          className="bg-sky-100 text-sky-700 dark:bg-sky-700 dark:text-sky-100"
+          themed
+        >
+          <AnnouncementTag>blog</AnnouncementTag>
+          <AnnouncementTitle>
+            check out my latest posts!
+            <ArrowUpRightIcon className="shrink-0 opacity-70" size={16} />
+          </AnnouncementTitle>
+        </Announcement>
+      </Link>
       <div className="flex flex-col">
         <h1>Tanay Agrawal</h1>
         <h2 className="text-muted-foreground">27tanaya@students.harker.org</h2>
       </div>
-      
+
       <ol className="font-mono list-inside list-decimal text-sm/6 text-left">
         <li className="mb-2">
           <LinkPreview
@@ -53,14 +53,16 @@ export default function Home() {
           <LinkPreview
             url="https://dev.harker.org/"
             className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-green-600 to-emerald-800 dark:text-opacity-100"
-          >harkerdev parking </LinkPreview></li>
+          >harkerdev</LinkPreview>
+        </li>
         <li className="mb-2">
           <LinkPreview
             url="https://its4advocacy.org/"
             imageSrc="/images/its4advocacy.png"
             isStatic
             className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-stone-500 to-stone-800 dark:text-opacity-10 dark:from-stone-500 dark:to-stone-300"
-          >its4advocacy </LinkPreview></li>
+          >its4advocacy </LinkPreview>
+        </li>
       </ol>
 
       <div className="flex gap-4 items-center flex-col sm:flex-row">
