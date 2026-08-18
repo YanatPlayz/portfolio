@@ -24,12 +24,22 @@ function Table({ data }: { data: TableData }) {
     ))
 
     return (
-        <table>
-            <thead>
-                <tr>{headers}</tr>
-            </thead>
-            <tbody>{rows}</tbody>
-        </table>
+        <div className="table-wrapper">
+            <table>
+                <thead>
+                    <tr>{headers}</tr>
+                </thead>
+                <tbody>{rows}</tbody>
+            </table>
+        </div>
+    )
+}
+
+function RawTable({ children, ...props }: React.ComponentProps<'table'>) {
+    return (
+        <div className="table-wrapper">
+            <table {...props}>{children}</table>
+        </div>
     )
 }
 
@@ -118,6 +128,7 @@ const components = {
     a: CustomLink,
     code: Code,
     Table,
+    table: RawTable,
     blockquote: Blockquote,
     Caption,
     BounceCards,

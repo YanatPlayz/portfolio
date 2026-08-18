@@ -19,8 +19,8 @@ export const categoryStyles: Record<string, { text: string; badge: string }> = {
         badge: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/50'
     },
     computer: {
-        text: 'text-purple-600 dark:text-purple-400',
-        badge: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/50'
+        text: 'text-blue-600 dark:text-blue-400',
+        badge: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/50'
     },
     linguistics: {
         text: 'text-rose-600 dark:text-rose-400',

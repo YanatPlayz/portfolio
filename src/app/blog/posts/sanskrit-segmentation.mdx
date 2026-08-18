@@ -1,0 +1,80 @@
+---
+title: 'Leveraging language limitations for learnings'
+publishedAt: '2026-03-15'
+summary: 'How I address Sanskrit-specific challenges to our semantic change approach.'
+category: 'sanskrit'
+---
+
+It's been a while, sorry. It's time to actually take on the Sanskrit-specific challenges.
+
+To start, the distributional hypothesis (which I introduced [here](/blog/semantic-embeddings#the-meaning-of-meaning)), in the context of word embeddings, assumes that you can hand it a clean sequence of word tokens. Unlike the English/Chinese/French/German corpora used in Hamilton et al. 2016 [^1], our Sanskrit data actively resists this.
+
+## The fusion problem
+
+First, Sanskrit has a feature called *sandhi* [^2], a set of phonological rules that fuse adjacent words together at their boundaries to aid pronounciation.
+
+> *iti* 'thus' + *uvāca* 'said' → *ityuvāca* 'thus spoke'
+
+Two common words condense into a single surface form when they sit next to each other. This is happening at nearly every word boundary, across a 2.7-million-token corpus. The word *uvāca* fuses into a new form with each different neighbor. Do you see the problem? A model that treats each variant as a distinct token never sees *uvāca* (on its own) often enough to learn its meaning, even though all these forms belong to the same lexeme.
+
+Add compounding (*samāsa*) on top of that, where multiple words are welded into a single long unit. Y'all already saw the 42-character example in my [earlier post](/blog/semantic-embeddings#case-study) (right?). Now you get a language where the "words" a naive tokenizer would recover are mostly unique, one-off strings that never repeat. That's the opposite of what a distributional model needs.
+
+## Un-fusing it
+
+Rule-based sandhi splitters exist (the [Sanskrit Heritage segmenter](https://sanskrit.inria.fr/) being the classic one), but they're built on hand-written lexicons and struggle with anything out-of-vocabulary or noisy. Moreover, they prove difficult to be automatically ran at the scale of my corpus. So I went for a neural option instead: ByT5-Sanskrit [^3], a byte-level model trained to do word segmentation in one pass, conveniently wrapped in [this Python package](https://pypi.org/project/dharmamitra-sanskrit-grammar/).
+
+Using the model wasn't as straightforward as I initially expected. I realized that the transformer model had a context window: feeding it an entire text at once wasn't an option. So before splitting can happen, every text first gets chopped into chunks of ≤350 characters at whitespace boundaries. And it's not perfect. It sometimes weirdly repeated certain words when parsing, overwriting entire sentences instead than correctly splitting it. Other times it just skipped over words or removed them altogether in the sandhied result.
+
+This meant a LOT of trial and error with parameters and wiring for the pipeline to run reliably. After scraping together enough compute, I remember spinning up eight instances to process different sections of the Epic bin in parallel. Still took hours to finish. The pipeline also runs a second pass to catch longer fused stragglers, while padding sentences with specific filler words (and removing them afterward) sometimes increased the performance of the model. And, of course, there were several pipelines running overnight that were still going when I woke up in the morning :).
+
+## Inflection
+
+You'd think that was the end of my sparsity problems, but no.
+
+Sanskrit is a heavily inflected language. I threw the stat at you already in that [earlier post](/blog/semantic-embeddings#case-study) (nouns can take 70+ forms, verbs up to 900), but here's what it really looks like: *rāja*, *rājasya*, *rājāya*, *rājena*, *rājāt*, *rājñaḥ*... all "king," all spelled differently depending on case, number, and its grammatical role in the sentence. Again, I wanted all of these to be consolidated into one token *rāja*, to enhance the co-occurrence signal that embeddings depend on.
+
+## Flattening it out
+
+I tried two approaches to this. 
+
+One is testing FastText against word2vec, since FastText operates at the subword level, constructing word embeddings from character n-grams that can capture recurring morphological patterns.
+
+The other approach was lemmatization: collapsing every inflected surface form down to a canonical headword. Luckily, the same ByT5-Sanskrit model also tags each resulting token with its dictionary lemma. However, by now, I knew better than to assume this would be easy.
+
+What I took out of that, practically, was a lookup table: every distinct surface form the model encountered gets mapped once to its lemma. From then on, every repeat occurrence could simply consult the table instead of running inference again (saving me compute resources).
+
+But there's a catch: the lookup table doesn't know anything about context. It maps a surface form to a lemma, which may not necessarily be the lemma appropriate to what the sentence is actually saying. That means it can sometimes over-collapse words: two forms that happen to share the same inflected shape, but have different meanings or roots, can get shoved into the same bucket. 
+
+We lose syntactical structure but the semantic information should be retained. I decided to live with that complication, take the chance, and see how much it actually mattered when I got to the results.
+
+## Other considerations
+
+As I progressed through the project, especially after digging deeper into Sanskrit scholarship, I realized I had another problem I hadn't fully accounted for: polysemy. A single Sanskrit word can carry a surprisingly broad range of meanings depending on context. Just look at literally *any* word on [Wisdom Lib](https://www.wisdomlib.org/sanskrit).
+
+That matters because Word2Vec and FastText ultimately give each word a single, static vector. Different senses get averaged together, even when the word means something quite different in different contexts. In hindsight, contextualized and temporally aware embeddings might be better suited to the ~~messiness~~ linguistic opportunities of Sanskrit.
+
+Let's also address the elephant in the room: data. Sure, Sanskrit has a substantial digitized literary record, but compared with something like English, the amount of usable computational training data is microscopic. It is, after all, an ancient language from 3,500 or so years ago.
+
+## The three musketeers
+
+Treating treat preprocessing itself as a variable to test rather than a fixed choice, I keep **three** separate corpora: raw (after step 3), sandhi-split (after step 4), and lemmatized (after step 5),
+
+The payoff for splitting shows up immediately, and it's not subtle. Restricting to words actually trackable across all four time periods, the vocabulary jumps from 801 words to 1,345 (a 68% increase) purely from breaking fused variants of the same lexeme back into a shape the model can recognize as one word.
+
+| Corpus variant | Trackable vocab (all 4 periods) |
+|---|---|
+| Raw | 801 |
+| Sandhi-split | 1,345 |
+| Lemmatized | 1,246 |
+
+Lemmatization, interestingly, loses a little of that gain. I attribute this to the lookup-table operation, which may occasionally be a bit too aggressive and fold together forms that have different senses.
+
+## Next up
+
+With three flavors of our corpus in hand and two sets of embedding architectures, the next step is quantifying change.
+
+Thanks for reading! As always, I'd love to hear your thoughts, suggestions, and questions — please do reach out.
+
+[^1]: *Diachronic Word Embeddings Reveal Statistical Laws of Semantic Change, PDF: https://aclanthology.org/P16-1141.pdf*
+[^2]: *A Sanskrit Grammar*, William Dwight Whitney, 1879.
+[^3]: *One Model is All You Need: ByT5-Sanskrit, a Unified Model for Sanskrit NLP Tasks*, PDF: https://arxiv.org/pdf/2409.13920

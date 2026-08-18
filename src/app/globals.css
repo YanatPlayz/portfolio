@@ -236,11 +236,37 @@ input[type='email'] {
   appearance: none;
 }
 
-table {
-  display: block;
-  max-width: fit-content;
-  overflow-x: auto;
-  white-space: nowrap;
+.prose .table-wrapper {
+  @apply w-fit max-w-full my-6 overflow-x-auto rounded-sm border border-neutral-200 dark:border-neutral-800;
+}
+
+.prose table {
+  @apply text-sm;
+  border-collapse: collapse;
+}
+
+.prose thead {
+  @apply bg-neutral-50 dark:bg-neutral-900;
+}
+
+.prose th {
+  @apply text-left font-medium text-neutral-600 dark:text-neutral-400 px-4 py-2.5 border-b border-neutral-200 dark:border-neutral-800 whitespace-nowrap;
+}
+
+.prose td {
+  @apply px-4 py-2.5 text-neutral-800 dark:text-neutral-200 border-b border-neutral-100 dark:border-neutral-900 whitespace-nowrap;
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.prose tbody tr {
+  @apply transition-colors;
+}
+
+.prose tbody tr:hover {
+  @apply bg-neutral-50/70 dark:bg-neutral-900/50;
 }
 
 .title {
