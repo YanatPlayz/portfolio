@@ -29,14 +29,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-
-        <div className="min-h-screen flex justify-center bg-background">
-          <div className="w-full max-w-2xl min-h-screen flex flex-col p-8 sm:p-20 border-x">
-            <Header />
-            <div className="flex-1 flex flex-col justify-center py-12">
-              {children}
+        <div className="page-scroller bg-background">
+          <div className="min-h-full flex justify-center">
+            <div className="w-full max-w-2xl flex flex-col p-8 sm:p-20 border-x">
+              <Header />
+              <div className="flex-1 flex flex-col justify-center py-12">
+                {children}
+              </div>
+              <Footer />
             </div>
-            <Footer />
           </div>
         </div>
       </body>

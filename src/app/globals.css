@@ -44,6 +44,8 @@
 }
 
 :root {
+  color-scheme: light;
+  --scrollbar-thumb: oklch(0.8 0 0);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -79,6 +81,8 @@
 }
 
 .dark {
+  color-scheme: dark;
+  --scrollbar-thumb: oklch(0.4 0 0);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -129,8 +133,31 @@
 
 html {
   min-width: 360px;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  height: 100%;
+}
+
+.page-scroller {
+  height: 100dvh;
   overflow-y: auto;
   scrollbar-gutter: stable both-edges;
+  scrollbar-color: var(--scrollbar-thumb) var(--background);
+}
+
+/* Safari doesn't support scrollbar-color */
+.page-scroller::-webkit-scrollbar {
+  width: 12px;
+  background: var(--background);
+}
+
+.page-scroller::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 3px solid var(--background);
+  border-radius: 9999px;
 }
 
 .prose .anchor {
