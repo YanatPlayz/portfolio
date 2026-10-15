@@ -14,11 +14,11 @@ The first step in this process is amassing all of the data. We have two options 
 
 Although Option 1 is appealing, we'll choose the second route since it's a bit more convenient as we're working with computers. And I guess you can stay at home and probably get better data.
 
-I sourced my texts from [GRETIL](https://gretil.sub.uni-goettingen.de/gretil.html), or the Göttingen Register of Electronic Texts in Indian Languages. It's one of the largest open-access repositories of digital Sanskrit texts for academic inquiry. That said, it isn't perfect as texts come from different editors and researchers. This means discrepancies primarily in formatting and interpretations (different editors percieve things differently), which we'll look at very soon. But first, what do we need to download again?
+I sourced my texts from [GRETIL](https://gretil.sub.uni-goettingen.de/gretil.html), or the Göttingen Register of Electronic Texts in Indian Languages. It's one of the largest open-access repositories of digital Sanskrit texts for academic inquiry. That said, it isn't perfect as texts come from different editors and researchers. This means discrepancies primarily in formatting and interpretations (different editors perceive things differently), which we'll look at very soon. But first, what do we need to download again?
 
 Well, if you'll remember (assuming you read the [case-study entry](https://www.tanayagrawal.xyz/blog/semantic-embeddings#case-study)), I've split the literature into these four time periods:
 
-1. Vedic (1500-500 BCE)
+1. Vedic (1500-600 BCE)
 2. Early Classical Upaniṣadic (700-200 BCE)
 3. Epics (400 BCE - 400 CE)
 4. Śāstra + Sūtra (200 BCE - 500 CE)
@@ -38,11 +38,11 @@ The example below matches a word that starts with a capital letter and continues
 ![Regex example](/images/regex.png)
 <Caption>You can play around with regex [here](https://regexr.com/).</Caption>
 
-To remove all instances of editorial notes and some types of verse lines, I implemented the following regular expresion. This catches all bracketed content such as ```<1.1.1>``` or ```(yathā)```. It's now just a few clicks to replace all matches with empty strings or whitespace.
+To remove all instances of editorial notes and some types of verse lines, I implemented the following regular expression. This catches all bracketed content such as ```<1.1.1>``` or ```(yathā)```. It's now just a few clicks to replace all matches with empty strings or whitespace.
 
 ```\(.*?\) | \<.*?\> | \[.*?\] | \{.*?\}```
 
-It wasn't all that straightfoward, however, due lots of inconsistencies across different files, but eventually after maybe 7 regex patterns and many iterations, I was left with raw Sanskrit text.
+It wasn't all that straightforward, however, due lots of inconsistencies across different files, but eventually after maybe 7 regex patterns and many iterations, I was left with raw Sanskrit text.
 
 ## Other things
 
