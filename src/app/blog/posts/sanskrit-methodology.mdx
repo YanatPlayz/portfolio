@@ -1,0 +1,93 @@
+---
+title: 'Measuring meaning as it moves'
+publishedAt: '2026-04-19'
+summary: 'The methodology behind measuring Sanskrit semantic change.'
+category: 'sanskrit'
+---
+
+Quick recap of where we are. We have a cleaned [corpus](/blog/sanskrit-corpus) split into four periods (Vedic, Upaniṣadic, Epic, Sūtra/Śāstra) and three [preprocessed versions](/blog/sanskrit-segmentation#the-three-musketeers) of it (raw, sandhi-split, lemmatized). We need to now convert text into analyzable numbers.
+
+## One model per era
+
+Following Hamilton et al. [^1], I train a **separate** embedding model for each period. The Vedic model only ever sees Vedic text, the Epic model only sees Epic data, and so on. We therefore have a representation of the same word in each of the four time periods.
+
+The two architectures I tested are word2vec and FastText. For FastText I tried two n-gram ranges, namely 3-6 and 6-12.
+
+The important rule: **change exactly one thing at a time**. Below are the hyperparameters I present in my paper:
+
+| Setting | Value |
+|---|---|
+| Dimensions | 300 |
+| Context window | 5 |
+| Minimum word count | 5 |
+| Negative samples | 10 |
+| Subsampling | 10⁻⁴ |
+| Epochs | 10 |
+| Seed | 42 |
+
+## The alignment problem
+
+Here's the catch with training models separately. Each model invents its own coordinate system from scratch. 
+
+Imagine taking two aerial photos of the same city, but from different rotations. The city's layout hasn't shifted, but one photo has north pointing up and the other might have north pointing to the bottom-left. If you overlay them and measure how far the library "moved," you'll get a huge number that's unfortunately meaningless.
+
+So directly comparing a word's Vedic vector to its Epic vector doesn't work. I used two ways around this.
+
+## Fix #1: judge a word by its friends
+
+The first approach skips the coordinates entirely and instead asks for the neighboring words of the target word. This is called **second-order similarity** [^2].
+
+For a word and a pair of periods:
+
+1. Take the word's 25 nearest neighbors in the first period, and its 25 nearest neighbors in the second. Combine them into one reference list. This captures both the company the word *leaves* and the company it *joins*.
+2. In each period, measure how similar the word is to every word on that list. That gives a "similarity profile" per period.
+3. Compare the two profiles. If they look alike, the word's meaning didn't change much. But if they're different enough, then *eureka* (the word changed)! If you were wondering, the change score is one minus the cosine between the profiles.
+
+Do you see how we've avoided the alignment problem? It's now a relative comparison.
+
+## Fix #2: rotate the maps
+
+The second approach tackles the problem head-on: just rotate the two until they line up. This is **orthogonal Procrustes** [^1], which finds the best rotation (no stretching or squishing) that lines one space up with another.
+
+I aligned every period onto the Vedic space. To figure out how to rotate, you need landmarks, which are words that didn't change much. I used the 767 words that show up at least 10 times in every single period. Once the spaces are aligned, the change score is just the cosine distance between a word's two vectors.
+
+Why don't we just use this method, you ask? Well, no rotation will line up two independently trained spaces perfectly, so this measure always carries some leftover alignment noise.
+
+## Which way did it move?
+
+You may have noticed that both measures tell you how much a word moved, but not where it moved. To verify my results against known shifts, we need to understand the meaning transition from before to after, not just the aggregate change amount. 
+
+So for each word, I built two small sets of **anchor words**, one for each sense. For example, for the word *guṇa*, it'd be something like this:
+
+| Old sense: string, binding | New sense: quality, virtue |
+|---|---|
+| *tantu* 'thread' | *svabhāva* 'inherent nature' |
+| *rajju* 'cord' | *lakṣaṇa* 'defining attribute' |
+| *jyā* 'bowstring' | |
+
+Average each set into one vector, and in each period measure how close the word is to the old-sense average and to the new-sense average. Then:
+
+```
+Δ = (new − old) at the end  −  (new − old) at the start
+```
+
+If Δ is positive, the word got closer to its new meaning *relative to* its old one. That's the philologically attested direction.
+
+Why the subtraction inside the parentheses? It turns out that as embedding spaces get bigger and more spread out, all of the cosine similarities tend to shrink. A word might appear to be drifting away from its new meaning just because everything is spreading out. Measuring the new sense against the old sense cancels that out. Only the relative pull matters.
+
+## Flipping coins
+
+Each word gets a yes/no answer: did it move the right way (Δ > 0) or not? Then the question becomes whether my hit rate beats chance.
+
+If the model were useless, each word would be a coin flip (50% chance of going either way). So I ask how likely it is to get *at least this many* heads by flipping 21 fair coins (for each of the 21 shifts I compiled). That's a one-sided binomial **sign test**.
+
+One more important detail: every prediction (the shift, its direction, the anchor words) was determined **a priori**, before looking at any embeddings. The candidate words were filtered only by whether they appear often enough in the corpus. No peeking and no cherry-picking!
+
+## Next up
+
+We have the models, the measures, and the coin flips. Next post, I'll review the results.
+
+Thanks for reading! As always, I'd love to hear your thoughts, suggestions, and questions, so please do reach out.
+
+[^1]: *Diachronic Word Embeddings Reveal Statistical Laws of Semantic Change, PDF: https://aclanthology.org/P16-1141.pdf*
+[^2]: *Cultural Shift or Linguistic Drift? Comparing Two Computational Measures of Semantic Change, PDF: https://aclanthology.org/D16-1229.pdf*
