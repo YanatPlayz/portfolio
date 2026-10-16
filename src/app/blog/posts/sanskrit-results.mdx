@@ -1,0 +1,87 @@
+---
+title: 'Demons, deities, and directional deltas'
+publishedAt: '2026-07-09'
+summary: 'The results: my Sanskrit embeddings recover 19 of 21 documented shifts.'
+category: 'sanskrit'
+---
+
+A while back, I set up the [coin-flip test](/blog/sanskrit-methodology#flipping-coins) for my 21 documented semantic shifts, a prediction for each written down in advance, and one question. Does each word move toward its new meaning? Let's see.
+
+## 19 out of 21
+
+Here's every word from my validation table (simplified here; full version on the [preprint](https://arxiv.org/abs/2609.25012)), run through the anchor test on the primary model (word2vec, sandhi-split corpus). Positive Δ means the word moved in the documented direction.
+
+| Word | Meaning shift (simplified) | Δ |
+|---|---|---|
+| *hari* | tawny, golden → horse, monkey, divine epithet | +0.677 |
+| *arka* | ray, hymn of praise → the sun | +0.639 |
+| *brahman* | prayer, sacred utterance → the absolute | +0.387 |
+| *yoga* | yoking, joining → spiritual discipline | +0.357 |
+| *kṣatra* | might, dominion → the warrior class | +0.344 |
+| *uttama* | highest, uppermost → best, most excellent | +0.322 |
+| *uttara* | upper, higher → later, superior, northern | +0.301 |
+| *soma* | soma plant, pressed juice → the moon | +0.277 |
+| *asura* | lord, mighty one → demon | +0.275 |
+| *guṇa* | strand, cord, bowstring → quality, virtue | +0.251 |
+| *ātman* | breath → the Self | +0.208 |
+| *bhṛtya* | a dependent → servant | +0.159 |
+| *aṃśu* | soma stalk → ray of the moon/sun | +0.147 |
+| *setu* | bond, fetter → bridge, dam | +0.072 |
+| *śūdra* | a tribe → the labor class | +0.057 |
+| *varuṇa* | sovereign of all → god of waters | +0.054 |
+| *tejas* | sharpness, fire → splendor, spiritual power | +0.036 |
+| *ari* | miser → enemy / lord | +0.030 |
+| *vrata* | divine command → personal vow | +0.014 |
+| *pāda* | foot → quarter | −0.100 |
+| *go* | cow → earth, rays, speech | −0.132 |
+
+{/* TODO image: horizontal bar chart of Δ, sorted, with deva in a different color */}
+
+**19 of the 21 shifts move in the attested direction.** Yay! Back to the coin: the probability of getting 19 or more heads out of 21 fair flips is about 0.00011. So it's very unlikely the model is just guessing.
+
+## The fall of asura
+
+My favorite result is *asura*. There's a nice history for this one.
+
+In the early Ṛg-Veda, *asura* means "lord, mighty one." It's used for the biggest gods: Indra, Varuṇa, Agni [^1]. By the time of the Epics, *asura* means "demon," the classic enemy of the gods.
+
+The plot twist is next door in Iran. The ancient Iranian cognate *ahura* went the opposite way and stayed divine (think *Ahura Mazdā*, the supreme god of Zoroastrianism) [^2]. Meanwhile, *deva*, from the same Indo-Iranian root as Avestan *daēva*, stayed "god" in Sanskrit while *daēva* became "demon" in Iranian [^3]. Two sister languages took the same pair of words and flipped them in opposite directions.
+
+That gives me a built-in **control**. I ran *deva* through the exact same anchor set as *asura* (divine vs. demonic). If my method just pushes everything toward "demon," *deva* would move that way too.
+
+It doesn't. In the Vedic period, *deva* and *asura* sit almost exactly the same distance from the divine and demonic anchors, each within 0.02 of even (0.65/0.67 and 0.64/0.65). That fits: at the start, both words just meant "powerful being." Then they split apart:
+
+| Word | Δ toward "demon" |
+|---|---|
+| *asura* | **+0.275** |
+| *deva* | **−0.159** |
+
+*asura* heads toward the demons and *deva* goes back toward the divine. That matches the philology. I guess my models aren't so bad after all :)
+
+## Watching the company change
+
+The anchor test gives a single number directing the change, but I really wanted to understand what was actually happening under the hood. I inspected the nearest neighbors of each of the words, for my qualitative analysis and confirmation.
+
+Below is a sample check, with some of *asura*'s closest words in each period:
+
+| Era | Selected nearest neighbors |
+|---|---|
+| Vedic | *mahat* 'great' (#1), *devānām* 'of the gods' (#2), *viṣṇoḥ* 'of Viṣṇu' (#6), *sāvitram* 'of Savitṛ (sun deity)' (#8) |
+| Upaniṣadic | *bhogāya* 'for worldly enjoyment' (#2), *abhimānam* 'ego, pride' (#10), *aviduṣām* 'of the ignorant' (#11), *sūkara* 'hog, pig' (#12) |
+| Epic | *dānava* 'demon' (#1), *uraga* 'serpent' (#2), *piśāca* 'flesh-eating ghoul' (#4), *daitya* 'titan, enemy of the gods' (#10) |
+
+<Caption>The numbers in parentheses are each word's rank among the 12 nearest neighbors.</Caption>
+
+The table shows the pejoration story clearly. *asura* starts out among the gods, passes through a middle period where it hangs out with ego, indulgence, and ignorance, and ends up surrounded by demons and ghouls. The model learned this history purely from which words *asura* appeared next to, which I think is fascinating.
+
+## Conclusion
+
+This answers my first research question: yes, diachronic word embeddings *can* recover documented semantic shifts in Sanskrit, even with sandhi, heavy inflection, and a fraction of the data modern NLP is used to.
+
+But 19 isn't 21. Next post, we look at the two words that got away, and what they say about the limits of this whole approach.
+
+Thanks for reading! As always, I'd love to hear your thoughts, suggestions, and questions, so please do reach out.
+
+[^1]: *Semantic Change in Sanskrit, Jiyalal Kamboj, https://books.google.com/books/about/Semantic_Change_in_Sanskrit.html?id=JGwhAAAAMAAJ*
+[^2]: *The Word Asura in the Ṛgveda, P. L. Bhargava, Annals of the Bhandarkar Oriental Research Institute, 1983.*
+[^3]: *Autochthonous Aryans? The Evidence from Old Indian and Iranian Texts, Michael Witzel, Electronic Journal of Vedic Studies, 2001.*
