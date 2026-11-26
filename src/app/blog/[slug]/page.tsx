@@ -1,3 +1,5 @@
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { CustomMDX } from '@/components/mdx'
 import { formatDate, getBlogPosts, getCategoryStyles } from '@/app/blog/utils'
@@ -88,6 +90,10 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
                     }),
                 }}
             />
+            <Link href="/blog" className="home-muted-link text-sm inline-flex items-center gap-1 mb-8">
+                <ArrowLeft size={14} aria-hidden="true" />
+                blog
+            </Link>
             <h1 className="title font-semibold text-2xl">
                 {post.metadata.title}
             </h1>

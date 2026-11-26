@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono, Noto_Sans_Devanagari } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
+  axes: ["opsz"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const devanagari = Noto_Sans_Devanagari({
+  variable: "--font-devanagari",
+  subsets: ["devanagari"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -27,16 +33,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${geistMono.variable} ${devanagari.variable} antialiased`}
       >
         <div className="page-scroller bg-background">
           <div className="min-h-full flex justify-center">
-            <div className="w-full max-w-2xl flex flex-col p-8 sm:p-20 border-x">
-              <Header />
-              <div className="flex-1 flex flex-col justify-center py-12">
-                {children}
-              </div>
-              <Footer />
+            <div className="relative w-full max-w-[668px] flex flex-col px-7 sm:px-16 pt-24 sm:pt-[120px] pb-20 sm:pb-[111px] border-x">
+              <AnimatedThemeToggler className="absolute top-4 right-4" />
+              {children}
             </div>
           </div>
         </div>

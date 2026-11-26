@@ -1,88 +1,252 @@
-import { LinkPreview } from "@/components/ui/link-preview";
-import { ChevronRight } from "lucide-react";
+import fs from "fs";
+import path from "path";
 import Link from "next/link";
-import { Announcement, AnnouncementTag, AnnouncementTitle } from "@/components/ui/announcement";
-import { ArrowUpRightIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { LinkPreview } from "@/components/ui/link-preview";
+import { Greeting } from "@/components/greeting";
+import { CopyButton } from "@/components/copy-button";
+import { getBlogPosts, readingTime } from "@/app/blog/utils";
+
+const EMAIL = "tanayagrawal31@gmail.com";
+
+type Item = {
+  title: string;
+  url: string;
+  date: string;
+  image?: string;
+  livePreview?: boolean;
+  accent: { light: string; dark: string };
+};
+
+const research: Item[] = [
+  {
+    title: "semantic change in sanskrit",
+    url: "https://arxiv.org/abs/2609.25012",
+    date: "oct '25",
+    accent: { light: "#d97706", dark: "#fbbf24" },
+  },
+  {
+    title: "language of resistance",
+    url: "https://languageofresistance.org/",
+    date: "may '25",
+    accent: { light: "#e11d48", dark: "#fb7185" },
+  },
+  {
+    title: "ucsc sip: altaic ellipsis",
+    url: "/documents/ellipsis-altaic.pdf",
+    date: "summer '25",
+    accent: { light: "#7c3aed", dark: "#a78bfa" },
+  },
+  {
+    title: "ucla cosmos: synthetic speech",
+    url: "/documents/deepfake-poster.pdf",
+    date: "summer '26",
+    accent: { light: "#2774ae", dark: "#5aa9e6" },
+  },
+];
+
+const projects: Item[] = [
+  {
+    title: "bay2bayhacks",
+    url: "https://bay2bayhacks.xyz/",
+    date: "march '25",
+    image: "/images/bay2bayhacks.png",
+    accent: { light: "#2563eb", dark: "#60a5fa" },
+  },
+  {
+    title: "harkerdev",
+    url: "https://dev.harker.org/",
+    date: "dec '24",
+    livePreview: true,
+    accent: { light: "#059669", dark: "#34d399" },
+  },
+  {
+    title: "its4advocacy",
+    url: "https://its4advocacy.org/",
+    date: "may '25",
+    image: "/images/its4advocacy.png",
+    accent: { light: "#57534e", dark: "#a8a29e" },
+  },
+  {
+    title: "sports ai",
+    url: "https://sportsai.us/",
+    date: "aug '23",
+    image: "/images/sportsai.png",
+    accent: { light: "#ea580c", dark: "#fb923c" },
+  },
+];
+
+const FEATURED_POSTS: Record<string, string | true> = {
+  "sanskrit-public": true,
+  "sanskrit-results": true,
+  "sanskrit-stacks": true,
+  "sanskrit-segmentation": true,
+  "semantic-embeddings": "how computers can help us understand word meanings as they change",
+};
+
+const STAGGER = 65;
+const delay = (step: number) =>
+  ({ "--appear-delay": `${step * STAGGER}ms` }) as React.CSSProperties;
+
+function Label({ children }: { children: React.ReactNode }) {
+  return <span className="link-label">{children}</span>;
+}
+
+function TextLink({
+  href,
+  accent,
+  children,
+}: {
+  href: string;
+  accent?: Item["accent"];
+  children: React.ReactNode;
+}) {
+  const external = /^https?:\/\//.test(href) || href.endsWith(".pdf");
+  return (
+    <a
+      href={href}
+      className="home-link"
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      data-accent={accent ? "" : undefined}
+      style={
+        accent
+          ? ({
+              "--accent-light": accent.light,
+              "--accent-dark": accent.dark,
+            } as React.CSSProperties)
+          : undefined
+      }
+    >
+      <Label>{children}</Label>
+    </a>
+  );
+}
+
+function ItemRows({ items }: { items: Item[] }) {
+  return (
+    <div className="home-rows">
+      {items.map((item) => [
+        <div key={`${item.title}-name`} className="home-names">
+          {item.image ? (
+            <LinkPreview
+              url={item.url}
+              isStatic
+              imageSrc={item.image}
+              accent={item.accent}
+              className="home-link"
+            >
+              <Label>{item.title}</Label>
+            </LinkPreview>
+          ) : item.livePreview ? (
+            <LinkPreview url={item.url} accent={item.accent} className="home-link">
+              <Label>{item.title}</Label>
+            </LinkPreview>
+          ) : (
+            <TextLink href={item.url} accent={item.accent}>
+              {item.title}
+            </TextLink>
+          )}
+        </div>,
+        <div key={`${item.title}-date`} className="home-dates">
+          {item.date}
+        </div>,
+      ])}
+    </div>
+  );
+}
 
 export default function Home() {
+  const posts = getBlogPosts()
+    .filter((post) => post.slug in FEATURED_POSTS)
+    .sort(
+      (a, b) =>
+        new Date(b.metadata.publishedAt).getTime() -
+        new Date(a.metadata.publishedAt).getTime(),
+    );
+
   return (
-    <main className="flex flex-col gap-[32px] items-start">
-      <Link href="/blog" >
-        <Announcement
-          className="bg-sky-100 text-sky-700 dark:bg-sky-700 dark:text-sky-100"
-          themed
-        >
-          <AnnouncementTag>blog</AnnouncementTag>
-          <AnnouncementTitle>
-            check out my latest posts!
-            <ArrowUpRightIcon className="shrink-0 opacity-70" size={16} />
-          </AnnouncementTitle>
-        </Announcement>
-      </Link>
-      <div className="flex flex-col">
-        <h1>Tanay Agrawal</h1>
-        <h2 className="text-muted-foreground">27tanaya@students.harker.org</h2>
+    <main className="home">
+      <h1 className="sr-only">Tanay Agrawal</h1>
+
+      <div className="appear" style={delay(0)}>
+          <img className="home-avatar" src={"/images/avatar.jpg"} alt="" draggable={false} />
       </div>
 
-      <ol className="font-mono list-inside list-decimal text-sm/6 text-left">
-        <li className="mb-2">
-          <LinkPreview
-            url="https://sportsai.us/"
-            imageSrc="/images/sportsai.png"
-            isStatic
-            className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-orange-500 to-orange-900 dark:text-opacity-100 dark:from-orange-800 dark:to-orange-500"
-          >sportsai </LinkPreview>
-        </li>
-        <li className="mb-2">
-          <LinkPreview
-            url="https://bay2bayhacks.xyz/"
-            imageSrc="/images/bay2bayhacks.png"
-            isStatic
-            className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-500 to-black dark:text-opacity-100 dark:from-blue-900 dark:to-blue-600"
-          >bay2bayhacks </LinkPreview>
-        </li>
-        <li className="mb-2">
-          <LinkPreview
-            url="https://languageofresistance.org/"
-            imageSrc="/images/languageofresistance.png"
-            isStatic
-            className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-pink-500 to-red-600 dark:text-opacity-100"
-          >language of resistance </LinkPreview>
-        </li>
-        <li className="mb-2">
-          <LinkPreview
-            url="https://dev.harker.org/"
-            className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-green-600 to-emerald-800 dark:text-opacity-100"
-          >harkerdev</LinkPreview>
-        </li>
-        <li className="mb-2">
-          <LinkPreview
-            url="https://its4advocacy.org/"
-            imageSrc="/images/its4advocacy.png"
-            isStatic
-            className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-stone-500 to-stone-800 dark:text-opacity-10 dark:from-stone-500 dark:to-stone-300"
-          >its4advocacy </LinkPreview>
-        </li>
-      </ol>
+      <div className="home-stack">
+        <div className="home-intro">
+          <Greeting style={delay(1)} />
+          <div className="home-bio">
+            <p className="appear" style={delay(2)}>
+              I’m Tanay, a student researcher interested in linguistics and computer science.
+            </p>
+            <p className="appear" style={delay(3)}>
+              Currently a senior at The Harker School, exploring low-resource language
+              preservation and building community-oriented software.
+            </p>
+            <p className="appear" style={delay(4)}>
+              Follow my research on the <TextLink href="/blog">blog series</TextLink> or
+              take a look at my{" "}
+              <TextLink href="/documents/resume.pdf">résumé</TextLink>.
+            </p>
+          </div>
+        </div>
 
-      <div className="flex gap-4 items-center flex-col sm:flex-row">
-        <Link
-          className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-          href="/documents/resume.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          view résumé <ChevronRight />
-        </Link>
+        <div className="home-groups">
+          <div className="home-divider" aria-hidden="true" />
+          <section className="home-section appear" style={delay(6)} aria-labelledby="research-title">
+            <h2 id="research-title">Research</h2>
+            <ItemRows items={research} />
+          </section>
 
-        <a
-          className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto"
-          href="mailto:tanayagrawal31@gmail.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          contact me
-        </a>
+          <div className="home-divider" aria-hidden="true" />
+          <section className="home-section appear" style={delay(7)} aria-labelledby="projects-title">
+            <h2 id="projects-title">Projects</h2>
+            <ItemRows items={projects} />
+          </section>
+
+          <div className="home-divider" aria-hidden="true" />
+          <section className="home-section appear" style={delay(8)} aria-labelledby="blog-title">
+            <h2 id="blog-title">Journal</h2>
+            <div className="home-rows">
+              {posts.map((post) => [
+                <div key={`${post.slug}-name`} className="home-names">
+                  <Link href={`/blog/${post.slug}`} className="home-link">
+                    <Label>
+                      {FEATURED_POSTS[post.slug] === true
+                        ? post.metadata.title.toLowerCase()
+                        : FEATURED_POSTS[post.slug]}
+                    </Label>
+                  </Link>
+                </div>,
+                <div key={`${post.slug}-time`} className="home-dates">
+                  {readingTime(post.content)} min
+                </div>,
+              ])}
+            </div>
+            <Link href="/blog" className="home-muted-link home-view-all inline-flex items-center gap-1">
+              View all posts
+              <ArrowRight size={13} aria-hidden="true" />
+            </Link>
+          </section>
+
+          <div className="home-divider" aria-hidden="true" />
+          <section className="home-section appear" style={delay(9)} aria-labelledby="connect-title">
+            <div className="home-connect">
+              <p>
+                Let's connect! The best way to reach me is at{" "}
+                <span className="whitespace-nowrap mr-1">
+                  <TextLink href={`mailto:${EMAIL}`}>{EMAIL}</TextLink>
+                  <CopyButton value={EMAIL} label="email" />
+                </span>
+                . I'm also on {" "}
+                <TextLink href="https://www.linkedin.com/in/tanayagrawal31/">
+                  LinkedIn
+                </TextLink>{" "}
+                and <TextLink href="https://github.com/YanatPlayz">GitHub</TextLink>.
+              </p>
+            </div>
+          </section>
+        </div>
       </div>
     </main>
   );

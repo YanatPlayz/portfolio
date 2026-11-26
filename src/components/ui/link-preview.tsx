@@ -19,6 +19,7 @@ type LinkPreviewProps = {
   width?: number;
   height?: number;
   quality?: number;
+  accent?: { light: string; dark: string };
 } & (
     | { isStatic: true; imageSrc: string }
     | { isStatic?: false; imageSrc?: never }
@@ -33,7 +34,13 @@ export const LinkPreview = ({
   quality = 50,
   isStatic = false,
   imageSrc = "",
+  accent,
 }: LinkPreviewProps) => {
+  const opensNewTab = /^https?:\/\//.test(url) || url.endsWith(".pdf");
+  const linkTarget = opensNewTab
+    ? { target: "_blank", rel: "noopener noreferrer" }
+    : {};
+
   let src;
   if (!isStatic) {
     const params = encode({
@@ -96,8 +103,18 @@ export const LinkPreview = ({
       >
         <HoverCardPrimitive.Trigger
           onMouseMove={handleMouseMove}
-          className={cn("text-black dark:text-white", className)}
+          className={cn(className)}
           href={url}
+          {...linkTarget}
+          data-accent={accent ? "" : undefined}
+          style={
+            accent
+              ? ({
+                  "--accent-light": accent.light,
+                  "--accent-dark": accent.dark,
+                } as React.CSSProperties)
+              : undefined
+          }
         >
           {children}
         </HoverCardPrimitive.Trigger>
@@ -130,6 +147,7 @@ export const LinkPreview = ({
               >
                 <Link
                   href={url}
+                  {...linkTarget}
                   className="block p-1 bg-white border-2 border-transparent shadow rounded-xl hover:border-neutral-200 dark:hover:border-neutral-800"
                   style={{ fontSize: 0 }}
                 >
@@ -139,7 +157,8 @@ export const LinkPreview = ({
                     height={height}
                     quality={quality}
                     priority={true}
-                    className="rounded-lg"
+                    className="rounded-lg object-cover object-top"
+                    style={{ width, height }}
                     alt="preview image"
                   />
                 </Link>

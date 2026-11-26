@@ -115,3 +115,13 @@ export function formatDate(date: string, includeRelative = false) {
 
     return `${fullDate} (${formattedDate})`
 }
+
+export function readingTime(content: string) {
+    const words = content
+        .replace(/```[\s\S]*?```/g, ' ')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\[\^[^\]]+\]:?/g, ' ')
+        .split(/\s+/)
+        .filter(Boolean).length
+    return Math.max(1, Math.round(words / 200))
+}
