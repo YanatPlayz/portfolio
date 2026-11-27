@@ -471,8 +471,8 @@ input[type='email'] {
     text-align: left;
     font-size: 12.5px;
     line-height: 18px;
-    margin-top: -2px;
-    margin-bottom: 8px;
+    margin-top: 4px;
+    margin-bottom: 12px;
   }
   .home-rows .home-dates:last-child {
     margin-bottom: 0;

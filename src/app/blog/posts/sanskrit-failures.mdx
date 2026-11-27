@@ -1,0 +1,89 @@
+---
+title: 'Cows, feet, and faults'
+publishedAt: '2026-10-26'
+summary: 'The two semantic shifts my Sanskrit embeddings missed, and what a cow and a foot reveal about the limits of static word vectors.'
+category: 'sanskrit'
+---
+
+[Last time](/blog/sanskrit-results), my embeddings correctly called 19 of 21 documented semantic shifts. This post is about the other two.
+
+I find the misses just as interesting as the hits. There's a lot to learn from it.
+
+## A pop quiz, answered
+
+The answer is **metaphor**, or more broadly, any change where a word *gains* new senses without losing its old one. Both misses are exactly that.
+
+## Miss #1: go, the cow
+
+*go* means "cow." Philologists document that it picked up a whole range of metaphorical meanings over time: "earth," "rays of light," "speech," even "the senses" [^1]. I guess Sanskrit poets loved this word (when you think about it, the earth does nourish everything, kind of like a cow).
+
+The model's verdict: Δ = **−0.132**. It moved the wrong way.
+
+Here's what its neighbors look like:
+
+| Era | Selected nearest neighbors |
+|---|---|
+| Vedic | *dhenavaḥ* 'milch-cows' (#1), *vatsam* 'calf' (#4), *dhītayaḥ* 'prayers' (#8), *sindhavaḥ* 'rivers' (#12), *vāśrāḥ* 'lowing cows' (#13) |
+| Epic | *vṛṣam* 'bull' (#2), *pradāne* 'offering' (#7), *pradātā* 'donor' (#10), *goṣṭhe* 'cow-pen' (#10), *kṣīra* 'milk' (#14) |
+| Sūtra | *vivīta* 'pasture ground' (#3), *carma* 'hide, leather' (#5), *kāṣṭha* 'timber' (#8), *mṛga* 'deer, animal' (#10), *vajra* 'diamond' (#14) |
+
+<Caption>Neighbor ranks out of the top 15. The 'cow' sense never really leaves.</Caption>
+
+The literal cow stays completely stable. The Vedic neighbors lean toward flowing rivers, and the later ones toward cows as gifts and goods (offerings, donors, hides, pastures). But "earth," "rays," and "speech" never show up.
+
+The reason is that word2vec gives each word **one** vector per period. Every use of *go* gets averaged together. When most uses are about actual cows, and the metaphorical ones are spread thinly across many different senses, the cow wins by a landslide. The poetic senses are there in the text, but they get drowned out.
+
+This is the polysemy problem I [worried about](/blog/sanskrit-segmentation#other-considerations) back in the segmentation post, now showing up in the results.
+
+## Miss #2: pāda, the foot
+
+*pāda* means "foot." Later it also comes to mean "quarter, fourth part." This comes from the four feet of an animal, and it's also why a quarter of a verse is called a *pāda* [^1].
+
+The model's verdict: Δ = **−0.100**. Wrong way again. But look at the neighbors:
+
+| Era | Selected nearest neighbors |
+|---|---|
+| Vedic | *śunaḥ* 'dog' (#1), *caritvā* 'having walked' (#7), *mimate* 'they measured' (#9), *dvipādaḥ* 'bipedal' (#14) |
+| Upaniṣadic | *catuṣkalaḥ* 'having four parts' (#2), *catuṣpād* 'four-footed' (#3), *sūryaḥ* 'the sun' (#9), *candraḥ* 'the moon' (#11), *pāṇi* 'hand' (#13) |
+| Epic | *mūle* 'at the base' (#2), *caraṇa* 'foot' (#8), *kaṭī* 'hip, waist' (#10), *jaṅghā* 'shank, lower leg' (#11) |
+| Sūtra | *catuḥ* 'four' (#2), *śva* 'dog' (#6), *aṅgulaḥ* 'finger's breadth' (#13) |
+
+<Caption>Neighbor ranks out of the top 15. The Vedic vector is built from very little data (n = 12), but still lands near walking and feet.</Caption>
+
+The "quarter" sense clearly shows up. In the Upaniṣadic period, *pāda* sits next to "having four parts" and "four-footed." In the Sūtra period, its #2 neighbor is literally "four."
+
+But this shift is documented as happening between the **Vedic** and **Epic** periods, and that's where the anchor test looks. In the Epic period, *pāda* goes back to being a body part, surrounded by hips, shanks, and the base of things. So the trajectory goes foot → quarter → foot → quarter.
+
+{/* TODO image: simple line plot of pāda's (new − old) anchor gap across the four eras, showing the zig-zag */}
+
+The anchor test compares only a start point and an end point, so it assumes the path between them is roughly a straight line. *pāda* zig-zags. Most likely the Epics, being long stories full of heroes running, kneeling, and fighting, just talk about literal feet a lot more. The new sense didn't disappear. The genre buried it.
+
+On top of that, the anchor words for the "quarter" sense are rare in the relevant periods, so the anchor average itself is shaky. For *pāda*, the neighbor lists are stronger evidence than the single Δ number.
+
+## What the misses teach
+
+Put together, the two failures point to two specific limits:
+
+| Word | What went wrong | Limit |
+|---|---|---|
+| *go* | Many metaphorical senses, each one rare | One static vector can't hold multiple senses |
+| *pāda* | Sense appears, gets buried, reappears | The anchor test assumes a one-way trajectory |
+
+Neither one is something more data or better hyperparameters would fix. Both are built into the approach: static embeddings and start-to-end comparisons. That's why *contextual* embeddings, which give a word a different vector every time it appears, are high on my list for future work.
+
+## Bonus: what about frequency?
+
+One more thing that could trip up a result like this is word frequency. Hamilton et al. [^2] found a "law of conformity": frequent words change *more slowly*. In my data, change scores actually correlate *positively* with frequency (ρ = +0.30), the opposite direction.
+
+I don't read this as a new law of Sanskrit. With only four periods and an Epic bin roughly 7.8× bigger than the Upaniṣadic one, it's much more likely to be estimation noise from unbalanced data. Importantly, it doesn't explain the 19/21 result. The Δ score is *relative*: any general drift caused by frequency would pull a word away from the old and new anchors alike, and that cancels out. A positive Δ requires the word to move specifically toward the new meaning.
+
+## Conclusion
+
+Two misses out of 21 isn't bad, and both misses were reasonable, explainable, and expected (I did literally pose it as a quiz).
+
+Next up: the model shootout. Why FastText, the model *designed* for morphologically rich languages, lost to plain old word2vec, and whether my lemmatization gamble paid off.
+
+Thanks for reading! As always, I'd love to hear your thoughts, suggestions, and questions, so please do reach out.
+
+[^1]: *Semantic Change in Sanskrit, Jiyalal Kamboj, https://books.google.com/books/about/Semantic_Change_in_Sanskrit.html?id=JGwhAAAAMAAJ*
+[^2]: *Diachronic Word Embeddings Reveal Statistical Laws of Semantic Change, PDF: https://aclanthology.org/P16-1141.pdf*
