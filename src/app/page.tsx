@@ -70,7 +70,7 @@ const projects: Item[] = [
   {
     title: "sports ai",
     url: "https://sportsai.us/",
-    date: "aug '23",
+    date: "july '23",
     image: "/images/sportsai.png",
     accent: { light: "#ea580c", dark: "#fb923c" },
   },
