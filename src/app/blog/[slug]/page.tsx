@@ -90,7 +90,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
                     }),
                 }}
             />
-            <Link href="/blog" className="home-muted-link text-sm inline-flex items-center gap-1 mb-8">
+            <Link href="/blog" className="home-muted-link text-sm flex w-fit items-center gap-1 mb-8">
                 <ArrowLeft size={14} aria-hidden="true" />
                 blog
             </Link>
