@@ -77,7 +77,7 @@ const projects: Item[] = [
 ];
 
 const FEATURED_POSTS: Record<string, string | true> = {
-  "sanskrit-public": true,
+  "slogans-travel": true,
   "sanskrit-results": true,
   "sanskrit-stacks": true,
   "sanskrit-segmentation": true,

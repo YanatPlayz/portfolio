@@ -1,0 +1,132 @@
+---
+title: 'Protest phrases in passage'
+publishedAt: '2026-10-13'
+summary: 'What I learned measuring how slogans spread across a country, across the political divide, and across languages.'
+category: 'linguistics'
+---
+
+In 2021, people protesting vaccine mandates held up signs that said *my body, my choice*. A year later, after the Dobbs decision, the same four words were back where they started: on abortion-rights signs, at hundreds of protests across the country.
+
+Slogans don't stay put. They spread from city to city, jump between political sides, and cross into other languages. This post is long overdue, but I published a [preliminary study](https://languageofresistance.org/research) back in August on exactly this as part of my Language of Resistance project. This post isn't a recap of the results (go read the page for that, it has interactive charts!). It's about what I learned along the way, most of which was about asking the right question.
+
+## The question I couldn't answer
+
+The original idea behind Language of Resistance was ambitious: figure out what makes protest language **effective**. Does rhyme help? Repetition? Short punchy commands?
+
+The problem is that "effective" is nearly impossible to measure. Say a slogan shows up at a thousand protests. Is that because it's well-worded, or because the cause it's about was the biggest news story of the year? *Ceasefire now* appeared at 1,443 events in my data. That says a lot about Gaza in 2023 and 2024, and maybe nothing about the words *ceasefire* and *now*.
+
+So I tried a cleverer design first. If the same slogan gets translated into many languages, the cause, the moment, and the stakes are identical across versions. Only the language changes. I wanted to see whether translations converge on a similar spoken length, roughly one breath for a chanting crowd.
+
+It found nothing. And when I dug in, part of the reason was my own pipeline:
+
+- My syllable counter silently dropped the vowel in words like *first* and *work* (the r-colored vowel /ɝ/), so they lost a syllable.
+- Serbian Cyrillic and Kurdish text scored **zero** syllables.
+- Scripts that don't write most vowels (Arabic, Hebrew, Persian) were undercounted.
+- About 21% of rows had no pronunciation at all.
+
+A null result from broken measurements isn't a finding. **Lesson one: test your pipeline on examples where you already know the answer before you trust anything it says.**
+
+## Asking a smaller question
+
+For round two, I swapped "what makes a slogan effective?" for something I could actually measure: **how do slogans travel?** That splits into three measurable versions:
+
+1. Across a country: how many US states did it reach?
+2. Across the political divide: did both left and right use it?
+3. Across languages: when another language adopts it, does it keep the original words or translate them?
+
+The US data comes from the Crowd Counting Consortium [^1], which logs protests across the country and, for a good chunk of them, the actual words on signs and in chants. That's 49,388 events and 3,801 slogans that show up at least five times. The cross-language data comes from Wikidata [^2]: 183 slogans with Wikipedia articles in at least five languages, which gives 2,351 versions.
+
+## Compare like with like
+
+The *ceasefire now* problem doesn't go away just because the question changed. The fix is to compare slogans only with others about the **same cause**: Gaza slogans against Gaza slogans, abortion slogans against abortion slogans. Then a popular cause can't make its slogans look better.
+
+Once you do that, length is the clearest pattern by far. Each extra syllable goes with about 3% fewer states, and it holds in 21 of 26 causes.
+
+![chart of spread by slogan length](/images/slogans/length.png)
+<Caption>Longer slogans reach fewer states, compared with slogans about the same cause that started the same month.</Caption>
+
+## Natural experiments hiding in the data
+
+My favorite trick in this project was finding pairs of slogans that say *almost the same thing*: same cause, mostly the same content words, different wording. *Stop the genocide* vs. *stop the flow of genocide*. If the message is basically fixed, the wording is the main thing left that differs.
+
+There's a trap, though. In a lot of pairs, the longer slogan is just the shorter one plus extra words:
+
+> *ceasefire now* / *honk for a ceasefire now*
+
+The long one isn't a rival wording. It exists *because* the short one was already spreading, and the extra words usually tie it to one place or event. Counting those pairs makes short slogans look better than they are. Once I threw them out, the shorter version still won **364 to 158**.
+
+## A sign isn't a cause
+
+Rhyme was the result I was most excited about. Across all slogans, rhyming ones reached about a third more states. Then I looked at the same-message pairs that differ only in rhyme, and the rhyming version won 21 and lost 22. Basically a coin flip.
+
+My best guess is that rhyme is a **marker** of a chant rather than the reason it spreads. Chants tend to rhyme, and chants get reused from protest to protest anyway. It's like noticing that people carrying umbrellas get wet more often. The umbrella isn't causing the rain.
+
+There's still the occasional striking case. *Resistance is justified when people are occupied* was recorded in 39 states. The version ending in *colonized* showed up in 1.
+
+## Averages hide things
+
+Word repetition (*free, free Palestine*) looked good overall: about 17% wider spread. But when I ran the same analysis inside each cause separately, repetition helped in 16 causes and *hurt* in the other 10.
+
+Why the mismatch? Nearly a third of all my slogans are about foreign affairs, mostly Gaza, so that one movement pulls the overall average toward its own chanting style. **One big group can carry a pooled number**, and the only way to catch it is to check whether the pattern holds group by group.
+
+## Slogans change sides
+
+This was the part of the project closest to my original Language of Resistance idea: the way movements borrow, and sometimes steal, each other's language. Twenty slogans show up substantially at both left- and right-coded protests.
+
+![monthly events for my body my choice](/images/slogans/my-body-my-choice.png)
+<Caption>*My body my choice*: 207 right-coded events in 2021, then 709 left-coded events in 2022.</Caption>
+
+It goes the other way too. *Don't tread on me*, a classic right-wing symbol, shows up at abortion-rights protests, and *I can't breathe* turns up at anti-mask rallies. A slogan's words don't belong to any one side. Whoever is holding the sign decides what it means.
+
+## Loanwords and calques
+
+The cross-language part is where the linguistics got really fun. When a slogan enters another language, there are two options:
+
+1. **Borrow it**: keep the original words, maybe rewritten in a new alphabet. Linguists call these *loanwords*.
+2. **Translate it**: render the meaning in the new language. When it's done word for word, linguists call it a [calque](https://en.wikipedia.org/wiki/Calque), like how English *skyscraper* became German *Wolkenkratzer* ("cloud-scraper").
+
+Here's *No pasarán* ("they shall not pass"), from the Spanish Civil War:
+
+| Language | Version | |
+|---|---|---|
+| Estonian | No pasarán | borrowed |
+| Russian | Но пасаран | borrowed (same words, Cyrillic letters) |
+| Polish | Nie przejdą! | translated |
+| Basque | Ez dira pasako | translated |
+| Japanese | 奴らを通すな! | translated |
+
+To sort thousands of versions, I romanized everything (turned every script into Latin letters) and measured how close each version was to the original. Close means borrowed. I then hand-checked 100 versions, and the script was right 88 times. Most of its mistakes were transliterations into scripts like Arabic or Korean, which I fixed by also comparing just the consonants.
+
+The headline: **chants are borrowed much more often than political terms**, 44% of versions vs. 24%. And chants split into two clear groups.
+
+![dot strip of every chant by share borrowed](/images/slogans/chant-strip.png)
+<Caption>Each dot is one chant, from always translated (left) to always borrowed (right). The black dot is *No pasarán*.</Caption>
+
+On the right are chants that work like **names or badges**: *Putin khuylo!* (89% borrowed), *Je suis Charlie* (83%). The exact words *are* the point, so you can't really translate them without losing something.
+
+On the left, the big stack of 0% chants is full of **templates**: *Death to America*, *Death to Israel*, *Death to the Dictator*. Every language already has its own way to say "death to X," so there's nothing to borrow. In construction-grammar terms, the frame is already there; you just fill in the slot.
+
+One wrinkle I can't fully explain yet: *Inquilab Zindabad* ("long live the revolution") is a template too ("long live X"), but it's borrowed 88% of the time. My guess is that the original Hindustani words carry the identity of the movement, the way *No pasarán* carries the Spanish Civil War. Templates may get translated unless the foreign form *is* the badge.
+
+## Write down the bar first
+
+Since my first attempt had already failed once, I didn't want to keep tweaking things until something looked good. Before running anything, I wrote down each question and what would count as a result (a "pre-registration"). For example, a wording feature only counts if it's clearly beyond chance **and** points the same way in at least two-thirds of causes.
+
+That rule is exactly why repetition doesn't get to be a headline finding, even though +17% sounds nice. It also kept me honest about the things I'd rather not report: the rhyme coin flip, and that the borrowing gap gets weaker when you only count slogans from languages other than English.
+
+## What's next
+
+There's a lot this data can't tell me yet:
+
+- **Reporting vs. chanting.** The US data records what reporters and coders noticed. Short slogans are also easier to photograph and quote, which could produce the same length effect.
+- **Chants vs. signs.** The data doesn't say which slogans were shouted and which were written, which is exactly what I'd need to settle the rhyme question.
+- **Wikipedia isn't a crowd.** An article title shows how each language's encyclopedia names a slogan. That's close to what people use, but it's not a recording of a protest.
+
+The interactive version, with every chart, all 20 side-switching slogans, and an explorer where you can browse every version of every chant, is on the [Language of Resistance research page](https://languageofresistance.org/research).
+
+## Conclusion
+
+Thanks for reading! As always, I'd love to hear your thoughts, suggestions, and questions, so please do reach out.
+
+[^1]: *Crowd Counting Consortium, Harvard Kennedy School Ash Center and University of Connecticut, https://ash.harvard.edu/programs/crowd-counting-consortium/*
+[^2]: *Wikidata, items that are instances of "slogan" (Q30515), https://www.wikidata.org/wiki/Q30515*
